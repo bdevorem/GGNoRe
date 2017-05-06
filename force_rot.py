@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2.7
 #naive implementation of a program that forces the rule of 30
 #on function length
 from pycparser import c_parser
