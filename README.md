@@ -4,8 +4,13 @@ the programmer
 
 # TODO
 [ ] make a plan  
-[ ] all of the things  
 [ ] enforce rule of 30  
 [ ] compile and stack overflow  
 [ ] silly typecaster  
-[ ] annoying debugger  
+[ ] annoying debugger
+  
+#### For safety critical code
+[ ] remove all recursion
+[ ] remove all goto statements
+[ ] only max 2 assertions per function
+[ ] remove all complicated macros
