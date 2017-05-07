@@ -1,6 +1,8 @@
 #!/usr/bin/env python2.7
 #naive implementation of a program that fixes gcc errors
 #uses https://github.com/thibauts/duckduckgo
+# YOU MUST GET IT FROM THAT REPO
+# THE ONE ON PIP IS DIFFERENT AND DOES NOT WORK
 
 import sys
 import fileinput
