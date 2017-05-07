@@ -8,12 +8,30 @@ import sys
 import fileinput
 
 LIMIT = 30
-DEBUG = False
+DEBUG = True
 
 lineCount = 0
 variables = []
 function = None
 junk = 100000
+
+def parse_types(_type, decl_type, decl_name, param_list=False):
+    while(True):
+        if DEBUG:
+            print _type
+        if isinstance(_type, pycparser.c_ast.TypeDecl):
+            decl_type = ' '.join(_type.type.names) + decl_type
+            decl_name = _type.declname 
+            variables.append((decl_type, decl_name))
+            break; #as far down in the ast you can go for decls
+        elif isinstance(_type, pycparser.c_ast.ArrayDecl):
+            decl_type += '*'
+        elif isinstance(_type, pycparser.c_ast.PtrDecl):
+            decl_type += '*'        
+        else:
+            raise Exception('Unknown type: ' + _type)
+            break;
+        _type = _type.children()[0][1]
 
 parser = c_parser.CParser()
 for line in fileinput.input():
@@ -21,7 +39,12 @@ for line in fileinput.input():
     if function:
         lineCount += 1
     try:
-        line = line.replace("{", ";")
+        # very brittle, need to fix
+        if line[-2] == "{":
+            line = line.replace("{", ";")
+        if not line[-2] == ";":
+            line = line + ';'
+
         ast = parser.parse(line).children()[0][1].children()[0][1]
         if DEBUG:
             ast.show(showcoord=True)
@@ -33,41 +56,26 @@ for line in fileinput.input():
 
             lineCount = 0
             for x in ast.children()[0][1].children():
-                node = x[1]
                 decl_type = ''
                 decl_name = ''
+                parse_types(x[1].children()[0][1], decl_type, decl_name, param_list=True)
 
-                while(True):
-                    _type = node.children()[0][1]
-                    if DEBUG:
-                        print _type
-
-                    if isinstance(_type, pycparser.c_ast.TypeDecl):
-                        decl_type = ' '.join(node.children()[0][1].type.names) + decl_type
-                        decl_name = node.children()[0][1].declname 
-                        variables.append((decl_type, decl_name))
-                        break; #as far down in the ast you can go for decls
-                    elif isinstance(_type, pycparser.c_ast.ArrayDecl):
-                        decl_type += '*'
-                        node = node.children()[0][1]
-                    elif isinstance(_type, pycparser.c_ast.PtrDecl):
-                        decl_type += '*'        
-                        node = node.children()[0][1]
-                    else:
-                        raise Exception('Unknown type: ' + _type)
-                        break;
-
-            #variables = [(' '.join(x[1].children()[0][1].type.names),
-            #             x[1].children()[0][1].declname)
-            #             for x in ast.children()[0][1].children()]
             if DEBUG:
                 print variables
 
-        elif isinstance(ast, pycparser.c_ast.TypeDecl):
-            variables.append((' '.join(ast.type.names), ast.declname))
+        elif isinstance(ast, pycparser.c_ast.PtrDecl) or \
+            isinstance(ast, pycparser.c_ast.ArrayDecl) or \
+            isinstance(ast, pycparser.c_ast.TypeDecl):
+
+            decl_type = ''
+            decl_name = ''
+            parse_types(ast, decl_type, decl_name, param_list=True)
+
+            if DEBUG:
+                print variables
+
     except Exception as e:
         print e
-        pass
 
     if lineCount > LIMIT:
         junk += 1
