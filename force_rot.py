@@ -8,7 +8,7 @@ import sys
 import fileinput
 
 LIMIT = 30
-DEBUG = True
+DEBUG = False
 function = ''
 func_type = ''
 lineCount = 0
@@ -29,7 +29,12 @@ def parse_types(_type, func=False):
                 function = decl_name
                 func_type = decl_type
             else:
-                variables.append((decl_type, decl_name))
+                if (decl_type, decl_name) not in variables:
+                    variables.append((decl_type, decl_name))
+                elif decl_type in dict(variables):
+                    variables.remove((decl_type, dict(variables)[decl_type]))
+                    variables.append((decl_type, decl_name))
+
             break; #as far down in the ast you can go for decls
         elif isinstance(_type, pycparser.c_ast.ArrayDecl):
             decl_type += '*'
