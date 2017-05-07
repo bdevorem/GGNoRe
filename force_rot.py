@@ -89,10 +89,16 @@ for line in fileinput.input():
         lineCount = 0
         f = "{}{}".format(function, junk)
         #make new function
-        print("    return {}({});\n}}\n{} {}({}) {{".format(
+        if func_type == 'void':
+            ret = ''
+        else:
+            ret = 'return '
+        print("    {}{}({});\n}}\n{} {}({}) {{".format(
+            ret,
             f,
             ", ".join([x[1] for x in variables]),
             func_type,
             f,
             ", ".join([" ".join(x) for x in variables])
             ))
+            
