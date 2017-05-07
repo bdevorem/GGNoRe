@@ -3,9 +3,10 @@ A GNU compiler collection that enforces good coding practices at the expense of
 the programmer
 
 # TODO
-[ ] make a plan  
-[ ] enforce rule of 30  
-[ ] compile and stack overflow  
+[X] make a plan  
+[X] enforce rule of 30  
+[X] compile and stack overflow  
+[ ] get useful feedback from internet
 [ ] silly typecaster  
 [ ] annoying debugger
   
