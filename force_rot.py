@@ -9,20 +9,27 @@ import fileinput
 
 LIMIT = 30
 DEBUG = True
-
+function = ''
+func_type = ''
 lineCount = 0
 variables = []
-function = None
 junk = 100000
 
-def parse_types(_type, decl_type, decl_name, param_list=False):
+def parse_types(_type, func=False):
+    decl_type = ''
+    decl_name = ''
     while(True):
         if DEBUG:
             print _type
         if isinstance(_type, pycparser.c_ast.TypeDecl):
             decl_type = ' '.join(_type.type.names) + decl_type
             decl_name = _type.declname 
-            variables.append((decl_type, decl_name))
+            if func:
+                global function, func_type
+                function = decl_name
+                func_type = decl_type
+            else:
+                variables.append((decl_type, decl_name))
             break; #as far down in the ast you can go for decls
         elif isinstance(_type, pycparser.c_ast.ArrayDecl):
             decl_type += '*'
@@ -50,16 +57,16 @@ for line in fileinput.input():
             ast.show(showcoord=True)
 
         if isinstance(ast, pycparser.c_ast.FuncDecl):
-            function = ast.children()[1][1].declname
+            func_node = ast.children()[1][1]
+            parse_types(func_node, func=True)
+
             if DEBUG:
                 print function
-            func_type = ' '.join(ast.children()[1][1].type.names)
+                print func_type
 
             lineCount = 0
             for x in ast.children()[0][1].children():
-                decl_type = ''
-                decl_name = ''
-                parse_types(x[1].children()[0][1], decl_type, decl_name, param_list=True)
+                parse_types(x[1].children()[0][1], func=False)
 
             if DEBUG:
                 print variables
@@ -67,10 +74,7 @@ for line in fileinput.input():
         elif isinstance(ast, pycparser.c_ast.PtrDecl) or \
             isinstance(ast, pycparser.c_ast.ArrayDecl) or \
             isinstance(ast, pycparser.c_ast.TypeDecl):
-
-            decl_type = ''
-            decl_name = ''
-            parse_types(ast, decl_type, decl_name, param_list=True)
+            parse_types(ast, func=False)
 
             if DEBUG:
                 print variables
