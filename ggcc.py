@@ -1,8 +1,6 @@
 #!/usr/bin/env python2.7
 #naive implementation of a program that fixes gcc errors
 #uses https://github.com/thibauts/duckduckgo
-# YOU MUST GET IT FROM THAT REPO
-# THE ONE ON PIP IS DIFFERENT AND DOES NOT WORK
 
 import sys
 import fileinput
@@ -37,12 +35,11 @@ if __name__ == '__main__':
                                       stderr=subprocess.STDOUT)
             keep_compiling = False
         except subprocess.CalledProcessError as e:
-            line = e.output.split(':')[1]
             error = e.output.split('\n')[1]
-            source = error.split(':')[:2]
-            #print source
-            #print line
-            #print error
+            source, line = error.split(':')[:2]
+            print source
+            print line
+            print error
             edit_line(source, int(line), get_code(error))
             keep_compiling = False
             
