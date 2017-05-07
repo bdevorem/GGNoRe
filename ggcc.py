@@ -37,13 +37,12 @@ if __name__ == '__main__':
                                       stderr=subprocess.STDOUT)
             keep_compiling = False
         except subprocess.CalledProcessError as e:
-            print e.output
             line = e.output.split(':')[1]
             error = e.output.split('\n')[1]
             source = error.split(':')[:2]
-            print source
-            print line
-            print error
+            #print source
+            #print line
+            #print error
             edit_line(source, int(line), get_code(error))
             keep_compiling = False
             
