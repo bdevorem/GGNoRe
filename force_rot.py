@@ -53,6 +53,7 @@ for line in fileinput.input():
             function = ast.children()[1][1].declname
             if DEBUG:
                 print function
+            func_type = ' '.join(ast.children()[1][1].type.names)
 
             lineCount = 0
             for x in ast.children()[0][1].children():
@@ -75,16 +76,19 @@ for line in fileinput.input():
                 print variables
 
     except Exception as e:
-        print e
+        if DEBUG:
+            print e
+        pass
 
     if lineCount > LIMIT:
         junk += 1
         lineCount = 0
         f = "{}{}".format(function, junk)
         #make new function
-        print("    return {}({});\n}}\nint {}({}) {{".format(
+        print("    return {}({});\n}}\n{} {}({}) {{".format(
             f,
             ", ".join([x[1] for x in variables]),
+            func_type,
             f,
             ", ".join([" ".join(x) for x in variables])
             ))
