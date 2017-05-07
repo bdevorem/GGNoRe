@@ -13,6 +13,8 @@ def edit_line(name, line, new):
     with open(name, 'r') as f:
         data = f.readlines()
     with open(name, 'w') as f:
+        new = [x+'\n' for x in new]
+        line = line - 1
         data = data[:line] + new + data[line+1:]
         f.writelines(data)
 
