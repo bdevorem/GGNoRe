@@ -7,47 +7,67 @@ import sys
 import fileinput
 import subprocess
 import requests
+from time import sleep
 import random
+from datetime import datetime
 from bs4 import BeautifulSoup as BSHTML
 
-def edit_line(name, line, new):
-    with open(name, 'r') as f:
-        data = f.readlines()
-    try:
-        with open(name, 'w') as f:
-            new = [x+'\n' for x in new]
-            if len(new) == 1:
-                if data[line].strip() == new[0].strip():
+def edit():
+    history = set()
+    def edit_line(name, line, new):
+        print history
+        with open(name, 'r') as f:
+            data = f.readlines()
+        try:
+            with open(name, 'w') as f:
+                new = [x+'\n' for x in new]
+                line = line - 1
+                if (name, line, data[line]) in history:
                     new[0] = '//' + new[0]
-            line = line - 1
-            data = data[:line] + new + data[line+1:]
-            f.writelines(data)
-    except:
-        with open(name, 'w') as f:
-            f.writelines(data)
+                data2 = data[:line] + new + data[line+1:]
+                f.writelines(data2)
+                history.add((name, line, data[line]))
+        except:
+            try:
+                with open(name, 'w') as f:
+                    f.writelines(data)
+            except Exception as E:
+                togo = random.choice(list(history))
+                history.remove(togo)
+                edit_line(togo[0], togo[1], '\\oops')
+                print E
+    return edit_line
+
 
 def get_code(error):
     error = ''.join([x for x in error if x in string.printable])
     error = 'site:stackoverflow.com '+(' '.join(error.strip().split()))
 
-    q = urllib.quote_plus(error, safe='()/\'\"`')
+    while True:
+        try:
+            q = urllib.quote_plus(error, safe='()/\'\"`')
+            r = requests.get('https://duckduckgo.com/html/?t=h_&ia=web&q='+q)
+            BS = BSHTML(r.text, "lxml")
 
-    requests.get('https://duckduckgo.com/html/?t=h_&ia=web&q=helpme')
+            result = BS.find_all('a', class_ = 'result__a', href = True)
+            result = random.choice(result)['href']
+            result = urllib.unquote_plus(result.split('uddg=')[-1])
 
-    r = requests.get('https://duckduckgo.com/html/?t=h_&ia=web&q='+q)
-    BS = BSHTML(r.text, "lxml")
+            r = requests.get(result)
+            BS = BSHTML(r.text, "lxml")
 
-    result = BS.find_all('a', class_ = 'result__a', href = True)
-    result = random.choice(result)['href']
-    result = urllib.unquote_plus(result.split('uddg=')[-1])
+            return random.choice(BS.find_all('code')).contents
+        except:
+            print 'gimme something: ',
+            q = sys.stdin.readline()
+            q = urllib.quote_plus(q)
+            requests.get('https://duckduckgo.com/html/?t=h_&ia=web&q='+q)
+            sleep(1)
 
-    r = requests.get(result)
-    BS = BSHTML(r.text, "lxml")
-
-    return random.choice(BS.find_all('code')).contents
 
 if __name__ == '__main__':
     keep_compiling = True
+    edit_line = edit()
 
     while keep_compiling:
         try:
@@ -56,14 +76,14 @@ if __name__ == '__main__':
             keep_compiling = False
         except subprocess.CalledProcessError as e:
             try:
-                error = e.output.split('\n')[1]
+                error = e.output.split('\n')[-5]
                 source, line = error.split(':')[:2]
-                print source
-                print line
-                print error
+                print source, line
+                #print error
                 edit_line(source, int(line), get_code(error))
                 keep_compiling = True #keep going
-            except Exception:
+            except Exception as E:
+                print E
                 print e.output
                 keep_compiling = False
             
