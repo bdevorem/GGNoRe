@@ -1,9 +1,71 @@
-[overview stuff]
 
-[our mission stuff]
+HACKING -- Overview
+===================
 
-[your contributions]
+This file contains the guidelines for contributions to our project!
+Please see below for more information about our project's goal, the workflow to
+contribute to the project, and style guidelines for your contributions!
 
-[workflow]
 
-[coding style]
+Mission
+=======
+
+The goal of this project is to provide a compiler and tool suite that force
+good programming practice in a fun, esoteric setting. We don't take ourselves
+too seriously, but we do take our C coding conventions seriously!
+
+
+Contributions
+=============
+
+If you seek to contribute to this project, please keep it in the spirit of
+our mission given above. Whether it be bug fixes to existing code or entirely
+new features, do your best to ensure that the feature is relevant and follows
+the workflow and style guidelines given below!
+
+
+Contribution Workflow
+=====================
+
+For those seeking to contribute to the project, please do as such:
+
+1. If a bug fix, please raise an issue denoting your intent to fix it.
+
+2. Fork the repository.
+
+3. Make your contributions.
+
+4. Submit a pull request explicitly detailing the following:
+	- Your contribution
+	- Why it should be included
+	- The names of all contributors to your patch
+	- If it was a bug fix, the relevant issue that was raised.
+
+5. If your patch is accepted, you will be notified!
+
+
+Contribution Style Guide
+========================
+
+For contributions, please follow the following code style guidelines:
+
+- Please utilize Python 2.7 for all contributions. If your contribution
+  requires a different language or libraries not currently included in
+  requirements.txt, please raise an issue noting the significance and
+  your reasoning.
+
+- All patches must work correctly on all Unix-like systems, including MacOS.
+
+- Please do not push changes until being sure that they work on all systems.
+
+- Please keep functions short, sufficient, and following the Rule of 30. Any
+  other practice would be hypocritical.
+
+- If your contribution improves one of our existing tools, please add the code
+  to said file. Otherwise, please create a new script for your tool.
+
+- All code should be modularized when possible.
+
+- Please avoid bloat in code. We want this to run as efficiently as possible.
+
+
