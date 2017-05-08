@@ -1,30 +1,50 @@
 #!/usr/bin/env python2.7
 #naive implementation of a program that fixes gcc errors
 #uses https://github.com/thibauts/duckduckgo
-
+import urllib
+import string
 import sys
 import fileinput
 import subprocess
-import duckduckgo
 import requests
+import random
 from bs4 import BeautifulSoup as BSHTML
 
 def edit_line(name, line, new):
     with open(name, 'r') as f:
         data = f.readlines()
-    with open(name, 'w') as f:
-        new = [x+'\n' for x in new]
-        line = line - 1
-        data = data[:line] + new + data[line+1:]
-        f.writelines(data)
+    try:
+        with open(name, 'w') as f:
+            new = [x+'\n' for x in new]
+            if len(new) == 1:
+                if data[line].strip() == new[0].strip():
+                    new[0] = '//' + new[0]
+            line = line - 1
+            data = data[:line] + new + data[line+1:]
+            f.writelines(data)
+    except:
+        with open(name, 'w') as f:
+            f.writelines(data)
 
 def get_code(error):
-    error = 'site:stackoverflow.com '+error
-    result = [l for l in duckduckgo.search(error, max_results=1)][0]
-    print result
+    error = ''.join([x for x in error if x in string.printable])
+    error = 'site:stackoverflow.com '+(' '.join(error.strip().split()))
+
+    q = urllib.quote_plus(error, safe='()/\'\"`')
+
+    requests.get('https://duckduckgo.com/html/?t=h_&ia=web&q=helpme')
+
+    r = requests.get('https://duckduckgo.com/html/?t=h_&ia=web&q='+q)
+    BS = BSHTML(r.text, "lxml")
+
+    result = BS.find_all('a', class_ = 'result__a', href = True)
+    result = random.choice(result)['href']
+    result = urllib.unquote_plus(result.split('uddg=')[-1])
+
     r = requests.get(result)
     BS = BSHTML(r.text, "lxml")
-    return BS.find_all('code')[-1].contents
+
+    return random.choice(BS.find_all('code')).contents
 
 if __name__ == '__main__':
     keep_compiling = True
@@ -42,8 +62,8 @@ if __name__ == '__main__':
                 print line
                 print error
                 edit_line(source, int(line), get_code(error))
-                keep_compiling = False
-            except:
+                keep_compiling = True #keep going
+            except Exception:
                 print e.output
                 keep_compiling = False
             
