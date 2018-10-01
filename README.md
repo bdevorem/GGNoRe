@@ -3,15 +3,15 @@ A GNU compiler collection that enforces good coding practices at the expense of
 the programmer
 
 # TODO  
- - [X] make a plan  
- - [X] enforce rule of 30  
- - [X] compile and stack overflow  
- - [ ] get useful feedback from internet  
- - [ ] silly typecaster  
- - [ ] annoying debugger  
+ - [X] Make a plan  
+ - [X] Enforce rule of 30  
+ - [X] Compile and stack overflow  
+ - [ ] Get useful feedback from internet  
+ - [ ] Silly typecaster  
+ - [ ] Annoying debugger  
   
 #### For safety critical code
-- [ ] remove all recursion
-- [ ] remove all goto statements
-- [ ] only max 2 assertions per function
-- [ ] remove all complicated macros
+- [ ] Remove all recursion
+- [ ] Remove all goto statements
+- [ ] Only max 2 assertions per function
+- [ ] Remove all complicated macros
