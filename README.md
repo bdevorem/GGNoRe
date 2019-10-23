@@ -2,7 +2,7 @@
 A GNU compiler collection that enforces good coding practices at the expense of 
 the programmer
 
-#WARNING
+# WARNING
 
 GGNoRe is destructive. That is, using our system may result in loss of code. In
 fact, most of the times it will result in loss of code. Our system is meant to
