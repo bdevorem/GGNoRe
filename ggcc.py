@@ -30,7 +30,7 @@ from bs4 import BeautifulSoup as BSHTML
 def edit():
     history = set()
     def edit_line(name, line, new):
-        print history
+        print(history)
         with open(name, 'r') as f:
             data = f.readlines()
         try:
@@ -50,7 +50,7 @@ def edit():
                 togo = random.choice(list(history))
                 history.remove(togo)
                 edit_line(togo[0], togo[1], '\\oops')
-                print E
+                print(E)
     return edit_line
 
 
@@ -60,22 +60,23 @@ def get_code(error):
 
     while True:
         try:
-            q = urllib.quote_plus(error, safe='()/\'\"`')
+            q = urllib.parse.quote_plus(error, safe='()/\'\"`')
             r = requests.get('https://duckduckgo.com/html/?t=h_&ia=web&q='+q)
             BS = BSHTML(r.text, "lxml")
 
             result = BS.find_all('a', class_ = 'result__a', href = True)
             result = random.choice(result)['href']
-            result = urllib.unquote_plus(result.split('uddg=')[-1])
+            print(result)
+            result = urllib.parse.unquote_plus(result.split('uddg=')[-1])
 
             r = requests.get(result)
             BS = BSHTML(r.text, "lxml")
 
             return random.choice(BS.find_all('code')).contents
-        except:
-            print 'gimme something: ',
+        except Exception as E:
+            print('gimme something: ',)
             q = sys.stdin.readline()
-            q = urllib.quote_plus(q)
+            q = urllib.parse.quote_plus(q)
             requests.get('https://duckduckgo.com/html/?t=h_&ia=web&q='+q)
             sleep(1)
 
@@ -91,14 +92,14 @@ if __name__ == '__main__':
             keep_compiling = False
         except subprocess.CalledProcessError as e:
             try:
-                error = e.output.split('\n')[-5]
+                output = e.output.decode("utf-8") 
+                error = [line for line in output.split('\n') if 'error' in line][0]
                 source, line = error.split(':')[:2]
-                print source, line
-                #print error
+                print(source, line)
                 edit_line(source, int(line), get_code(error))
                 keep_compiling = True #keep going
             except Exception as E:
-                print E
-                print e.output
+                print(E)
+                print(output)
                 keep_compiling = False
             
